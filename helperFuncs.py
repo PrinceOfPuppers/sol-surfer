@@ -1,11 +1,14 @@
 import numpy as np
-from math import sin,cos
+from math import sin,cos,acos
 
 def cmplxCross(a,b):
     return(a.real*b.imag-b.real*a.imag)
 
 def cmplxDot(a,b):
     return(a.real*b.real+a.imag*b.imag)
+
+def angleUnsigned(a,b):
+    return( acos((cmplxDot(a,b))/(abs(a)*abs(b))) )
 def sortByRadius(mass):
     return(mass.radius)
 

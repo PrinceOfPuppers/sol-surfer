@@ -1,6 +1,6 @@
 import pygame as pg
 from config import Config
-from mass import MassManager
+from massManager import MassManager
 from random import random
 
 class Screen:
@@ -8,7 +8,7 @@ class Screen:
         self.size=config.screenSize
         self.display=pg.display.set_mode((config.screenSize[0], config.screenSize[1]))
         self.pos=0
-        self.zoom=10
+        self.zoom=5
         self.margin=config.screenMargin
         self.zoomRate=config.screenZoomRate
         self.stars=[]
