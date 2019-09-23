@@ -52,10 +52,6 @@ class MassManager:
                 depth=dist-(mass1.radius+mass2.radius)
                 #objectsCollided
                 if depth<=0:
-
-                    #checks if masses should absorb eachother
-                    if depth<-min(mass1.radius,mass2.radius):
-                        self.absorb(mass1,mass2)
                     
                     #player specific collision
                     if i==0:
@@ -94,10 +90,12 @@ class MassManager:
                                     
                                 self.plr.pos=mass2.pos+unitVec*mass2.radius-(point[0]+point[1]*1j)
                                 break
-
+                    
                     #all other collision
                     else:
-                        pass
+                        #checks if masses should absorb eachother
+                        if depth<-min(mass1.radius,mass2.radius):
+                            self.absorb(mass1,mass2)
 
 
     
@@ -131,11 +129,11 @@ class MassManager:
         print("overflow protection called")
         for mass in self.massList:
             if mass!=self.plr:
-                mass.pos-=self.plr.pos
+                mass.pos-=screen.pos
                 if abs(mass.pos.real)>100000 or abs(mass.pos.imag)>100000:
                     self.massesToRemove.append(mass)
                     self.numMasses-=1
-        self.plr.pos=0
+        self.plr.pos-=screen.pos
         screen.pos=0
         for mass in self.massesToRemove:
             self.massList.remove(mass)
@@ -149,7 +147,7 @@ class MassManager:
             self.overflowProtection(screen)
         self.applyGravAndCheckCol(deltaT)
         for mass in self.massList:
-            mass.handler(screen,tickNumber)
+            mass.handler(screen,deltaT,tickNumber)
 
 
 

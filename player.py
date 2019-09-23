@@ -4,6 +4,55 @@ import numpy as np
 from math import sin,cos,pi
 from helperFuncs import rotateVecs,sortByRadius,cmplxCross,cmplxDot,angleUnsigned
 from mass import Mass
+class Booster:
+    def __init__(self,config):
+        self.boosting=False
+
+        self.afterburner=False
+        self.afterburnerMultiplier=config.afterburnerMultiplier
+        self.maxAfterBurnerCharge=config.maxAfterBurnerCharge
+        self.afterburnerCharge=config.maxAfterBurnerCharge
+
+        self.color=(255,0,0)
+        self.boostForce=config.playerBoostForce
+        self.animation=config.boosterAnimation
+        self.animationRelPlayer=np.copy(config.boosterAnimation)
+        self.numBoostFrames=len(self.animation)
+
+    def render(self,screen,plr,tickNumber,plrPos):
+        frameNum=tickNumber%self.numBoostFrames
+        rotateVecs(self.animation[frameNum],self.animationRelPlayer[frameNum],plr.rot+pi/2,plr.rotMatrix)
+        for i in range(0,len(self.animation[frameNum])):
+            self.animationRelPlayer[frameNum][i][0]/=screen.zoom
+            self.animationRelPlayer[frameNum][i][1]/=screen.zoom
+            self.animationRelPlayer[frameNum][i][0]+=plrPos[0]
+            self.animationRelPlayer[frameNum][i][1]+=plrPos[1]
+        pg.draw.aalines(screen.display,self.color,True,self.animationRelPlayer[frameNum])
+    
+    def boostHandler(self,plr,deltaT):
+        if self.afterburner:
+            self.afterburnerCharge-=1
+            plr.applyForce(self.afterburnerMultiplier*self.boostForce*(cos(plr.rot)+sin(plr.rot)*1j),deltaT)
+            if self.afterburnerCharge<=0:
+                self.deactivateAfterburner()
+
+        elif self.boosting:
+            plr.applyForce(self.boostForce*(cos(plr.rot)+sin(plr.rot)*1j),deltaT)
+        
+        if self.afterburnerCharge<self.maxAfterBurnerCharge and not self.afterburner:
+            self.afterburnerCharge+=1
+        
+
+
+
+    def activateAfterburner(self):
+        self.afterburner=True
+        self.color=(0,255,255)
+    
+    def deactivateAfterburner(self):
+        self.afterburner=False
+        self.color=(255,0,0)
+
 
 class Player(Mass):
     def __init__(self,config,mass,initalPos,radius,color,secondColor,surfaceFeat,initalVel=0+0j,initalRot=0):
@@ -17,7 +66,7 @@ class Player(Mass):
         self.rotVel=0
         self.momentOfInertia=config.playerMomentInertia
         
-        self.boosting=False
+
         self.asset=config.playerAsset
         self.displayPoints=np.copy(config.playerAsset)
         self.displayPointsLen=len(self.displayPoints)
@@ -27,10 +76,8 @@ class Player(Mass):
         self.maxImpulse=config.playerMaxImpulse
         self.maxLandingAngle=config.playerMaxLandingAngle
 
-        self.boostForce=config.playerBoostForce
-        self.animation=config.boosterAnimation
-        self.animationRelPlayer=np.copy(config.boosterAnimation)
-        self.numBoostFrames=len(self.animation)
+
+        self.booster=Booster(config)
 
 
 
@@ -47,15 +94,10 @@ class Player(Mass):
         pg.draw.aalines(screen.display,self.color,True,self.displayPoints)
 
         #draws booster animation
-        if self.boosting:
-            frameNum=tickNumber%self.numBoostFrames
-            rotateVecs(self.animation[frameNum],self.animationRelPlayer[frameNum],self.rot+pi/2,self.rotMatrix)
-            for i in range(0,len(self.animation[frameNum])):
-                self.animationRelPlayer[frameNum][i][0]/=screen.zoom
-                self.animationRelPlayer[frameNum][i][1]/=screen.zoom
-                self.animationRelPlayer[frameNum][i][0]+=plrPos[0]
-                self.animationRelPlayer[frameNum][i][1]+=plrPos[1]
-            pg.draw.aalines(screen.display,(255,0,0),True,self.animationRelPlayer[frameNum])
+        if self.booster.boosting or self.booster.afterburner:
+            self.booster.render(screen,self,tickNumber,plrPos)
+
+
 
 
 
@@ -69,14 +111,14 @@ class Player(Mass):
         if turn!=0:
             self.rotVel=0
 
-        self.boosting=boosting
-        if self.boosting:
-            self.applyForce(self.boostForce*(cos(self.rot)+sin(self.rot)*1j),deltaT)
+        self.booster.boosting=boosting
+
             
-    def handler(self,screen,tickNumber):
+    def handler(self,screen,deltaT,tickNumber):
         self.applyMotion()
         screen.pos=self.pos
         self.render(screen,tickNumber)
+        self.booster.boostHandler(self,deltaT)
     
     def applyForceAndTorque(self,forceVec,forcePoint,deltaT):
         self.applyForce(forceVec,deltaT)

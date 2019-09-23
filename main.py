@@ -54,19 +54,26 @@ class GameManager:
             # checks if user has quit
             if event.type == pg.QUIT:
                 self.hasQuit=True
+            
+            if event.type == pg.KEYDOWN:
+                if event.key==pg.K_SPACE:
+                    self.plr.booster.activateAfterburner()
+            if event.type == pg.KEYUP:
+                if event.key ==pg.K_SPACE:
+                    self.plr.booster.deactivateAfterburner()
         
         plrRot=0
         plrBoost=False
         keys=pg.key.get_pressed()
-        if keys[pg.K_RIGHT]:
+        if keys[pg.K_d]:
             plrRot+=1
-        if keys[pg.K_LEFT]:
+        if keys[pg.K_a]:
             plrRot+=-1
-        if keys[pg.K_UP]:
+        if keys[pg.K_w]:
             plrBoost=True
-        if keys[pg.K_PAGEUP]:
+        if keys[pg.K_q]:
             self.screen.zoom+=self.screen.zoomRate
-        if keys[pg.K_PAGEDOWN] and self.screen.zoom>0.5:
+        if keys[pg.K_e] and self.screen.zoom>0.5:
             self.screen.zoom-=self.screen.zoomRate
         self.plr.applyControls(self.spf,plrBoost,plrRot)
         

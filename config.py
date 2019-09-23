@@ -74,11 +74,13 @@ class Config:
 
 
         self.playerTurnSpeed=0.05
-        self.playerBoostForce=30000
+        self.playerBoostForce=20000
         self.playerMomentInertia=0.5*pi*self.radii[0]**4
-        self.playerMaxImpulse=10000
+        self.playerMaxImpulse=20000
         self.playerMaxLandingAngle=pi/2
 
+        self.afterburnerMultiplier=3
+        self.maxAfterBurnerCharge=100
         self.playerAsset=np.array([[-10.0, 15], [0.0, -15.0], [10.0, 15], [0.0, 5.0]])
 
         self.boosterAnimation=np.array([

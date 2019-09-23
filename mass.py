@@ -45,7 +45,7 @@ class Mass:
                 gfx.aapolygon(screen.display,self.surfaceFeatDisplay[i],self.secondColor)
 
     
-    def handler(self,screen,tickNumber):
+    def handler(self,screen,deltaT,tickNumber):
         self.applyMotion()
         self.render(screen)
     
