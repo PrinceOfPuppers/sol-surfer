@@ -9,6 +9,9 @@ def cmplxDot(a,b):
 
 def angleUnsigned(a,b):
     return( acos((cmplxDot(a,b))/(abs(a)*abs(b))) )
+
+def sortById(mass):
+    return(mass.id)
 def sortByRadius(mass):
     return(mass.radius)
 

@@ -15,19 +15,30 @@ class Config:
         #to spawn another object, just add its radius, posistion and velocity to the list
         #if you dont want to spawn a particular type, just set its pos to inf and it'll desapawn on startup (an example is at end of lists)
 
-        #self.initalPos=[0,1000,-inf,inf,inf,inf,inf,inf,inf,inf]
+        #self.
 
-        #self.initalPos=[0,1000,-1000,1000j,-1000j,2000,-2000,2000j,-2000j,inf]
-        #self.initalVels=[0,5j,-5j,-5,5,1j,-1j,-1,1,inf]
-        #self.radii=[25,300,300,300,300,100,100,100,100,inf]
+        
 
-        self.initalPos=[-1000j,0,3000j,3800j,inf,inf,inf,inf,inf,inf]
-        self.initalVels=[8,0,-6,-12,inf,inf,inf,inf,inf,inf]
-        self.radii=[25,500,300,80,300,100,100,100,100,inf]
-
-        self.masses=[]
-        for i in range(0,len(self.radii)):
-            self.masses.append(pi*self.radii[i]**2)
+        self.levels=[
+            {
+                "name": "Loanly Star",
+                "pos": [0,1000,inf,inf,inf,inf,inf,inf,inf,inf,inf],
+                "vels": [0,0,inf,inf,inf,inf,inf,inf,inf,inf,inf],
+                "radii": [25,500,inf,inf,inf,inf,inf,inf,inf,inf,inf]
+            },
+            {
+                "name": "starSystem",
+                "pos":[-1000j,0,3000j,3800j,inf,inf,inf,inf,inf,inf,inf],
+                "vels": [8,0,-6,-12,inf,inf,inf,inf,inf,inf,inf],
+                "radii":[25,500,300,80,300,100,100,100,100,inf,inf]
+            },
+            {
+                "name": "Dance Till You're Dead",
+                "pos" :[0,1000,-1000,1000j,-1000j,2000,-2000,2000j,-2000j,inf,inf],
+                "vels" :[0,5j,-5j,-5,5,1j,-1j,-1,1,inf,inf],
+                "radii" :[25,300,300,300,300,100,100,100,100,inf,inf]
+            }
+        ]
         
         self.colors=[np.array([255,255,255]),#white
             np.array([250, 182, 88]),#yellow orange
@@ -75,7 +86,6 @@ class Config:
 
         self.playerTurnSpeed=0.05
         self.playerBoostForce=20000
-        self.playerMomentInertia=0.5*pi*self.radii[0]**4
         self.playerMaxImpulse=20000
         self.playerMaxLandingAngle=pi/2
 

@@ -42,10 +42,12 @@ class GameManager:
 
 
         
-        self.massMgr=MassManager(config)
-        self.plr=self.massMgr.massList[0]
+
+ 
 
         self.screen=Screen(config)
+        self.massMgr=MassManager(config,self.screen)
+        self.plr=self.massMgr.massList[0]
         self.screen.pos=self.plr.pos
 
     

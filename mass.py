@@ -7,16 +7,19 @@ from helperFuncs import rotateVecs,sortByRadius,cmplxCross,cmplxDot,angleUnsigne
 
 
 class Mass:
-    def __init__(self,mass,initalPos,radius,color,secondColor,surfaceFeat,initalVel=0+0j):
-        self.mass=mass
-        self.pos=initalPos
-        self.vel=initalVel
-        self.radius=radius
+    def __init__(self,massId,initalPos,radius,color,secondColor,surfaceFeat,initalVel=0+0j):
         self.color=color
         self.secondColor=secondColor
         self.surfaceFeatAsset=surfaceFeat
         self.surfaceFeatDisplay=np.array(surfaceFeat[:][:])
+        self.id=massId
+        self.constructor(initalPos,radius,initalVel)
         
+    def constructor(self,pos,radius,vel):
+        self.pos=pos
+        self.radius=radius
+        self.vel=vel
+        self.mass=pi*(radius**2)
     
     def applyForce(self,forceVec,deltaT):
         self.vel+=forceVec*deltaT/self.mass

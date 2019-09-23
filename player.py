@@ -55,16 +55,14 @@ class Booster:
 
 
 class Player(Mass):
-    def __init__(self,config,mass,initalPos,radius,color,secondColor,surfaceFeat,initalVel=0+0j,initalRot=0):
-        super().__init__(mass,initalPos,radius,color,secondColor,surfaceFeat,initalVel)
-        self.rot=initalRot
+    def __init__(self,config,massId,initalPos,radius,color,secondColor,surfaceFeat,initalVel=0+0j):
+        self.rot=0
         self.rotMatrix=np.zeros((2,2),dtype=float)
 
         self.turnSpeed=config.playerTurnSpeed
         
         #used when player collides with surface
         self.rotVel=0
-        self.momentOfInertia=config.playerMomentInertia
         
 
         self.asset=config.playerAsset
@@ -75,11 +73,21 @@ class Player(Mass):
         self.collisionPoints=np.copy(config.playerAsset)
         self.maxImpulse=config.playerMaxImpulse
         self.maxLandingAngle=config.playerMaxLandingAngle
-
-
         self.booster=Booster(config)
+        super().__init__(massId,initalPos,radius,color,secondColor,surfaceFeat,initalVel)
 
+    def constructor(self,pos,radius,vel):
+        self.pos=pos
+        self.radius=radius
+        self.vel=vel
+        self.mass=pi*(radius**2)
+        self.momentOfInertia=0.5*pi*self.radius**4
+        self.rotVel=0
+        self.rot=0
 
+        self.booster.boosting=False
+        self.booster.afterburner=False
+        self.booster.afterburnerCharge=self.booster.maxAfterBurnerCharge
 
 
     def render(self,screen,tickNumber):
