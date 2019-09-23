@@ -1,7 +1,9 @@
 import pygame as pg
+from random import random
+from menu import Button,TextBox
 from config import Config
 from massManager import MassManager
-from random import random
+
 
 class Screen:
     def __init__(self,config):
@@ -47,8 +49,10 @@ class GameManager:
 
         self.screen=Screen(config)
         self.massMgr=MassManager(config,self.screen)
-        self.plr=self.massMgr.massList[0]
+        self.plr=self.massMgr.plr
         self.screen.pos=self.plr.pos
+
+        self.levelNum=0
 
     
     def applyControls(self):
@@ -79,12 +83,8 @@ class GameManager:
             self.screen.zoom-=self.screen.zoomRate
         self.plr.applyControls(self.spf,plrBoost,plrRot)
         
-            
-
-                
+               
     def gameLoop(self):
-        pg.init()
-        pg.display.set_caption("Sol Surfer")
         while not self.hasQuit:
 
             self.applyControls()
@@ -101,9 +101,112 @@ class GameManager:
             pg.Surface.fill(self.screen.display,(35, 34, 49))
 
             self.tickNumber+=1
+
+    def titleControls(self,enterHit):
+        levelNumChanged=False
+        for event in pg.event.get():
+            # checks if user has quit
+            if event.type == pg.QUIT:
+                self.hasQuit=True
             
+            if event.type == pg.KEYDOWN:
+                if event.key==pg.K_d:
+                    self.levelNum+=1
+                    levelNumChanged=True
+                elif event.key==pg.K_a:
+                    self.levelNum-=1
+                    levelNumChanged=True
+                elif event.key==pg.K_RETURN or event.key==pg.K_SPACE:
+                    enterHit=True
+                    print("hello")
+            
+        self.levelNum%=len(self.massMgr.levels)
+        return(enterHit,levelNumChanged)
+
+    def titleScreenTransition(self):
+        #plays game while zooming in the camera to the players positition 
+        startZoom=self.config.zoomInStart
+        zoomTime=self.config.zoomTime
+        endZoom=self.config.initalGameZoom
+        zoomRate=(endZoom-startZoom)/zoomTime
+
+        titleTextVel=(0,-2*(self.titleText.center[1]+self.titleText.boxHeight)/zoomTime)
+        levelTextVel=(0,2*(self.levelText.center[1]+self.levelText.boxHeight)/zoomTime)
+
+        self.tickNumber=0
+        self.screen.zoom=startZoom
+        while not (self.hasQuit or zoomTime<self.tickNumber):
+            #title movement and rendering 
+            self.screen.zoom+=zoomRate
+            self.titleText.moveText(titleTextVel)
+            self.levelText.moveText(levelTextVel)
+
+            if not self.titleText.allLinesActivated:
+                self.titleText.activateRandomLine()
+            
+            self.titleText.displayActiveLines(self.screen.display)
+            
+            if not self.levelText.allLinesActivated:
+                self.levelText.activateRandomLine()
+            self.levelText.displayActiveLines(self.screen.display)
+
+
+            #normal game loop
+            self.applyControls()
+
+            if self.tickNumber%100==0:
+                print(self.clock)
+
+            self.clock.tick_busy_loop(self.fps)
+
+            self.screen.renderStars()
+            self.massMgr.handler(self.screen,self.tickNumber,self.spf)
+
+            pg.display.update()
+            pg.Surface.fill(self.screen.display,(35, 34, 49))
+
+            self.tickNumber+=1
+            
+    def titleScreen(self):
+        enterHit=False
+        self.titleText=TextBox("SOL SURFER",(255,255,255),(self.screen.size[0]/2,self.screen.size[1]/3),self.screen.size[0]/20)
+        self.levelText=TextBox(self.massMgr.levels[self.levelNum]["name"],(255,255,255),(self.screen.size[0]/2,2*self.screen.size[1]/3),self.screen.size[0]/30)
+        self.titleText.initalizeTextBox()
+        self.levelText.initalizeTextBox()
+
+        levelTextDelay=self.config.levelTextDelay
+        while not (self.hasQuit or enterHit):
+            enterHit,levelNumChanged=self.titleControls(enterHit)
+            if levelNumChanged:
+                self.levelText.changeText(self.massMgr.levels[self.levelNum]["name"])
+            if not self.titleText.allLinesActivated:
+                self.titleText.activateRandomLine()
+            
+            self.titleText.displayActiveLines(self.screen.display)
+
+            if self.tickNumber>levelTextDelay:
+                if not self.levelText.allLinesActivated:
+                    self.levelText.activateRandomLine()
+                self.levelText.displayActiveLines(self.screen.display)
+            
+            self.clock.tick_busy_loop(self.fps)
+
+            self.screen.renderStars()
+
+            pg.display.update()
+            pg.Surface.fill(self.screen.display,(35, 34, 49))
+            self.tickNumber+=1
+        
+    def main(self):
+        pg.init()
+        pg.display.set_caption("Sol Surfer")
+        self.titleScreen()
+        self.massMgr.constructBodies(self.screen,self.levelNum)
+        self.titleScreenTransition()
+        while not self.hasQuit:
+            self.gameLoop()
 
 if __name__=="__main__":
     cfg=Config()
     gameMgr=GameManager(cfg)
-    gameMgr.gameLoop()
+    gameMgr.main()

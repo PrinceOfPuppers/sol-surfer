@@ -9,6 +9,8 @@ class Config:
         self.starRadius=3
         self.starWidth=1
         self.starColor=(150,150,150)
+
+
         #starting data for all the bodies, player is 0th index
         #masses will be sorted by radius (except for player which will be index 0)
 
@@ -21,19 +23,19 @@ class Config:
 
         self.levels=[
             {
-                "name": "Loanly Star",
+                "name": "LONELY STAR",
                 "pos": [0,1000,inf,inf,inf,inf,inf,inf,inf,inf,inf],
-                "vels": [0,0,inf,inf,inf,inf,inf,inf,inf,inf,inf],
+                "vels": [8j,0,inf,inf,inf,inf,inf,inf,inf,inf,inf],
                 "radii": [25,500,inf,inf,inf,inf,inf,inf,inf,inf,inf]
             },
             {
-                "name": "starSystem",
+                "name": "STARSYSTEM",
                 "pos":[-1000j,0,3000j,3800j,inf,inf,inf,inf,inf,inf,inf],
                 "vels": [8,0,-6,-12,inf,inf,inf,inf,inf,inf,inf],
                 "radii":[25,500,300,80,300,100,100,100,100,inf,inf]
             },
             {
-                "name": "Dance Till You're Dead",
+                "name": "SOLAR SQUARE DANCE",
                 "pos" :[0,1000,-1000,1000j,-1000j,2000,-2000,2000j,-2000j,inf,inf],
                 "vels" :[0,5j,-5j,-5,5,1j,-1j,-1,1,inf,inf],
                 "radii" :[25,300,300,300,300,100,100,100,100,inf,inf]
@@ -90,7 +92,8 @@ class Config:
         self.playerMaxLandingAngle=pi/2
 
         self.afterburnerMultiplier=3
-        self.maxAfterBurnerCharge=100
+        self.maxAfterBurnerCharge=50
+        self.maxAfterBurnerChargeRate=0.5
         self.playerAsset=np.array([[-10.0, 15], [0.0, -15.0], [10.0, 15], [0.0, 5.0]])
 
         self.boosterAnimation=np.array([
@@ -116,8 +119,12 @@ class Config:
 
         self.screenZoomRate=0.1
         #margin is how far offscreen does somthing have to be before its not drawn
-        self.screenMargin=100
+        self.screenMargin=10
 
+        self.levelTextDelay=30
+        self.zoomInStart=300
+        self.zoomTime=80
+        self.initalGameZoom=8
 
         #screen dimensions and scaling
         root=tkinter.Tk()

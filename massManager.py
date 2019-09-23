@@ -14,7 +14,6 @@ class MassManager:
         self.massesToRemove=[]
         self.levels=config.levels
         self.initalizeBodies(config)
-        self.constructBodies(screen)
 
     def initalizeBodies(self,config):
         level=config.levels[0]
@@ -32,7 +31,7 @@ class MassManager:
         self.plr=plr
         
 
-    def constructBodies(self,screen,levelNum=1):
+    def constructBodies(self,screen,levelNum):
         
         #removes all masses from masslist and adds them to inactive mass list
         for i in range(0,len(self.massList)):
@@ -174,7 +173,7 @@ class MassManager:
 
 
     def handler(self,screen,tickNumber,deltaT):
-        if tickNumber%5000==0:
+        if tickNumber%50==0:
             self.overflowProtection(screen)
         self.applyGravAndCheckCol(deltaT)
         for mass in self.massList:

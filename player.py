@@ -12,7 +12,8 @@ class Booster:
         self.afterburnerMultiplier=config.afterburnerMultiplier
         self.maxAfterBurnerCharge=config.maxAfterBurnerCharge
         self.afterburnerCharge=config.maxAfterBurnerCharge
-
+        self.afterburnerChargeRate=config.maxAfterBurnerChargeRate
+        
         self.color=(255,0,0)
         self.boostForce=config.playerBoostForce
         self.animation=config.boosterAnimation
@@ -40,7 +41,7 @@ class Booster:
             plr.applyForce(self.boostForce*(cos(plr.rot)+sin(plr.rot)*1j),deltaT)
         
         if self.afterburnerCharge<self.maxAfterBurnerCharge and not self.afterburner:
-            self.afterburnerCharge+=1
+            self.afterburnerCharge+=self.afterburnerChargeRate
         
 
 
