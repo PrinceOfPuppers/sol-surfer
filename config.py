@@ -125,6 +125,7 @@ class Config:
         self.zoomInStart=300
         self.zoomTime=80
         self.initalGameZoom=8
+        self.titleTextSpeedMultiplier=3
 
         #screen dimensions and scaling
         root=tkinter.Tk()

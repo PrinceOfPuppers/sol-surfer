@@ -173,7 +173,7 @@ class MassManager:
 
 
     def handler(self,screen,tickNumber,deltaT):
-        if tickNumber%50==0:
+        if tickNumber%5000==0:
             self.overflowProtection(screen)
         self.applyGravAndCheckCol(deltaT)
         for mass in self.massList:

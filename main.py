@@ -118,7 +118,6 @@ class GameManager:
                     levelNumChanged=True
                 elif event.key==pg.K_RETURN or event.key==pg.K_SPACE:
                     enterHit=True
-                    print("hello")
             
         self.levelNum%=len(self.massMgr.levels)
         return(enterHit,levelNumChanged)
@@ -130,8 +129,8 @@ class GameManager:
         endZoom=self.config.initalGameZoom
         zoomRate=(endZoom-startZoom)/zoomTime
 
-        titleTextVel=(0,-2*(self.titleText.center[1]+self.titleText.boxHeight)/zoomTime)
-        levelTextVel=(0,2*(self.levelText.center[1]+self.levelText.boxHeight)/zoomTime)
+        titleTextVel=(0,-self.config.titleTextSpeedMultiplier*(self.titleText.center[1]+self.titleText.boxHeight)/zoomTime)
+        levelTextVel=(0,self.config.titleTextSpeedMultiplier*(self.levelText.center[1]+self.levelText.boxHeight)/zoomTime)
 
         self.tickNumber=0
         self.screen.zoom=startZoom
