@@ -15,6 +15,9 @@ def sortById(mass):
 def sortByRadius(mass):
     return(mass.radius)
 
+def quad(a,b,c,x):
+    return(a*x**2 + b*x + c)
+
 def rotateVecs(matrixToRotate,matrixToWrite,angle,rotMatrix):
     #this is the transpose of the usual rotation matrix because
     #vecs are represented as row vectors

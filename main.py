@@ -3,6 +3,7 @@ from random import random
 from menu import Button,TextBox
 from config import Config
 from massManager import MassManager
+from helperFuncs import quad
 
 
 class Screen:
@@ -13,6 +14,7 @@ class Screen:
         self.zoom=5
         self.margin=config.screenMargin
         self.zoomRate=config.screenZoomRate
+        self.maxZoom=config.maxZoom
         self.stars=[]
         self.starColor=config.starColor
         self.starRadius=config.starRadius
@@ -25,6 +27,9 @@ class Screen:
         screenTup=(int((worldComplex.real-self.pos.real)/self.zoom +self.size[0]/2),int((worldComplex.imag-self.pos.imag)/self.zoom+self.size[1]/2))
         return(screenTup)
 
+    def convertCoordsInv(self,screenTup):
+        worldComplex=(screenTup[0]-self.size[0]/2)*self.zoom+self.pos.real+((screenTup[1]-self.size[1]/2)*self.zoom+self.pos.imag)*1j
+        return(worldComplex)
     def renderStars(self):
         for star in self.stars:
             pg.draw.circle(self.display,self.starColor,star,self.starRadius,self.starWidth)
@@ -51,7 +56,7 @@ class GameManager:
         self.massMgr=MassManager(config,self.screen)
         self.plr=self.massMgr.plr
         self.screen.pos=self.plr.pos
-
+    
         self.levelNum=0
 
     
@@ -79,7 +84,7 @@ class GameManager:
             plrBoost=True
         if keys[pg.K_q]:
             self.screen.zoom+=self.screen.zoomRate
-        if keys[pg.K_e] and self.screen.zoom>0.5:
+        if keys[pg.K_e] and self.screen.zoom>self.screen.maxZoom:
             self.screen.zoom-=self.screen.zoomRate
         self.plr.applyControls(self.spf,plrBoost,plrRot)
         
@@ -127,27 +132,23 @@ class GameManager:
         startZoom=self.config.zoomInStart
         zoomTime=self.config.zoomTime
         endZoom=self.config.initalGameZoom
-        zoomRate=(endZoom-startZoom)/zoomTime
 
-        titleTextVel=(0,-self.config.titleTextSpeedMultiplier*(self.titleText.center[1]+self.titleText.boxHeight)/zoomTime)
-        levelTextVel=(0,self.config.titleTextSpeedMultiplier*(self.levelText.center[1]+self.levelText.boxHeight)/zoomTime)
+
+        a=-(endZoom-startZoom)/(zoomTime**2)
+        b=-2*a*zoomTime
 
         self.tickNumber=0
-        self.screen.zoom=startZoom
         while not (self.hasQuit or zoomTime<self.tickNumber):
             #title movement and rendering 
-            self.screen.zoom+=zoomRate
-            self.titleText.moveText(titleTextVel)
-            self.levelText.moveText(levelTextVel)
-
+            self.screen.zoom=quad(a,b,startZoom,self.tickNumber)
             if not self.titleText.allLinesActivated:
                 self.titleText.activateRandomLine()
             
-            self.titleText.displayActiveLines(self.screen.display)
+            self.titleText.displayActiveLines(self.screen)
             
             if not self.levelText.allLinesActivated:
                 self.levelText.activateRandomLine()
-            self.levelText.displayActiveLines(self.screen.display)
+            self.levelText.displayActiveLines(self.screen)
 
 
             #normal game loop
@@ -165,11 +166,17 @@ class GameManager:
             pg.Surface.fill(self.screen.display,(35, 34, 49))
 
             self.tickNumber+=1
-            
+
     def titleScreen(self):
         enterHit=False
-        self.titleText=TextBox("SOL SURFER",(255,255,255),(self.screen.size[0]/2,self.screen.size[1]/3),self.screen.size[0]/20)
-        self.levelText=TextBox(self.massMgr.levels[self.levelNum]["name"],(255,255,255),(self.screen.size[0]/2,2*self.screen.size[1]/3),self.screen.size[0]/30)
+        self.screen.zoom=self.config.zoomInStart
+
+        titlePos=self.screen.convertCoordsInv((self.screen.size[0]/2,self.screen.size[1]/3))
+        levelTextPos=self.screen.convertCoordsInv(((self.screen.size[0]/2,2*self.screen.size[1]/3)))
+
+        self.titleText=TextBox("SOL SURFER",(255,255,255),titlePos,self.screen.zoom*self.screen.size[0]/20)
+        self.levelText=TextBox(self.massMgr.levels[self.levelNum]["name"],(255,255,255),levelTextPos,self.screen.zoom*self.screen.size[0]/30)
+
         self.titleText.initalizeTextBox()
         self.levelText.initalizeTextBox()
 
@@ -181,12 +188,12 @@ class GameManager:
             if not self.titleText.allLinesActivated:
                 self.titleText.activateRandomLine()
             
-            self.titleText.displayActiveLines(self.screen.display)
+            self.titleText.displayActiveLines(self.screen)
 
             if self.tickNumber>levelTextDelay:
                 if not self.levelText.allLinesActivated:
                     self.levelText.activateRandomLine()
-                self.levelText.displayActiveLines(self.screen.display)
+                self.levelText.displayActiveLines(self.screen)
             
             self.clock.tick_busy_loop(self.fps)
 

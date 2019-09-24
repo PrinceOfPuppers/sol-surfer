@@ -118,14 +118,15 @@ class Config:
 
 
         self.screenZoomRate=0.1
+        self.maxZoom=0.8
         #margin is how far offscreen does somthing have to be before its not drawn
         self.screenMargin=10
 
-        self.levelTextDelay=30
-        self.zoomInStart=300
-        self.zoomTime=80
-        self.initalGameZoom=8
-        self.titleTextSpeedMultiplier=3
+        self.initalGameZoom=3
+        self.zoomInStart=3000
+        #the literals here are in seconds, theyre then converted into frames through multiplicaiton
+        self.levelTextDelay=round(0.5*self.fps)
+        self.zoomTime=round(1.33*self.fps)
 
         #screen dimensions and scaling
         root=tkinter.Tk()

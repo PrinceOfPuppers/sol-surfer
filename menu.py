@@ -76,7 +76,7 @@ class TextBox:
         self.allLinesInactive=True
 
         #calculated in initalizeTextBox
-        self.position=[0,0]
+        self.position=0+0j
         self.letterScaling=0
         self.characterHeight=0
         self.boxWidth=0
@@ -96,7 +96,7 @@ class TextBox:
         for letter in self.alphabet:
             character=[]
             for line in self.font[letter]:
-                newLine=((self.letterScaling*line[0][0],self.letterScaling*line[0][1]),(self.letterScaling*line[1][0],self.letterScaling*line[1][1]))
+                newLine=(self.letterScaling*line[0][0]+self.letterScaling*line[0][1]*1j,self.letterScaling*line[1][0]+self.letterScaling*line[1][1]*1j)
                 character.append(newLine)
             self.characters[letter]=character
 
@@ -106,18 +106,18 @@ class TextBox:
         self.boxHeight=self.characterHeight
 
         #calculates posisiton of text box (top left corner)
-        positionX=self.center[0]-self.boxWidth/2
-        positionY=self.center[1]-self.boxHeight/2
-        self.posisiton=[positionX,positionY]
+        positionX=self.center.real-self.boxWidth/2
+        positionY=self.center.imag-self.boxHeight/2
+        self.posisiton=positionX+positionY*1j
 
         #creates lineList
         for i in range(0,self.textLength):
             letter=self.text[i]
             letterLines=self.characters[letter]
             for line in letterLines:
-                offsetX=self.posisiton[0]+i*(self.characterWidth+self.characterSpacing)
-                offsetY=self.posisiton[1]
-                displayLine=[[line[0][0]+offsetX,line[0][1]+offsetY],[line[1][0]+offsetX,line[1][1]+offsetY]]
+                offsetX=self.posisiton.real+i*(self.characterWidth+self.characterSpacing)
+                offsetY=self.posisiton.imag
+                displayLine=[line[0].real+offsetX+(line[0].imag+offsetY)*1j,line[1].real+offsetX+(line[1].imag+offsetY)*1j]
                 self.lineListInactive.append(displayLine)
     
     def changeText(self,text,DisplayAll=False):
@@ -130,8 +130,8 @@ class TextBox:
         self.boxWidth=self.textLength*(self.characterWidth+self.characterSpacing)
 
         #calculates posisiton of text box (top left corner)
-        positionX=self.center[0]-self.boxWidth/2
-        positionY=self.center[1]-self.boxHeight/2
+        positionX=self.center.real-self.boxWidth/2
+        positionY=self.center.imag-self.boxHeight/2
         self.posisiton=[positionX,positionY]
         
         self.lineListInactive.clear()
@@ -144,7 +144,7 @@ class TextBox:
             for line in letterLines:
                 offsetX=self.posisiton[0]+i*(self.characterWidth+self.characterSpacing)
                 offsetY=self.posisiton[1]
-                displayLine=[[line[0][0]+offsetX,line[0][1]+offsetY],[line[1][0]+offsetX,line[1][1]+offsetY]]
+                displayLine=[line[0].real+offsetX+(line[0].imag+offsetY)*1j,line[1].real+offsetX+(line[1].imag+offsetY)*1j]
 
                 if DisplayAll:
                     self.lineListActive.append(displayLine)
@@ -153,20 +153,16 @@ class TextBox:
     
     def moveText(self,traslation):
         for line in self.lineListActive:
-            line[0][0]+=traslation[0]
-            line[0][1]+=traslation[1]
-            line[1][0]+=traslation[0]
-            line[1][1]+=traslation[1]
+            line[0]+=traslation
+            line[1]+=traslation
         
         for line in self.lineListInactive:
-            line[0][0]+=traslation[0]
-            line[0][1]+=traslation[1]
-            line[1][0]+=traslation[0]
-            line[1][1]+=traslation[1]
-            
-    def displayActiveLines(self,gameDisplay):
+            line[0]+=traslation
+            line[1]+=traslation
+
+    def displayActiveLines(self,screen):
         for line in self.lineListActive:
-            pg.draw.aaline(gameDisplay,self.color,line[0],line[1])
+            pg.draw.aaline(screen.display,self.color,screen.convertCoords(line[0]),screen.convertCoords(line[1]))
 
     #will scramble the order of both lists
     def activateRandomLine(self):

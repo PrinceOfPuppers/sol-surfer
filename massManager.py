@@ -24,7 +24,6 @@ class MassManager:
                 Mass(i,level["pos"][i],level["radii"][i],config.colors[i],config.secondColors[i],surfFeat,level["vels"][i])
             )
         plrSurfFeat=config.featureDict[config.featureTypes[0]]
-        print(level["pos"][0],level["radii"][0])
         plr=Player(config,0,level["pos"][0],level["radii"][0],config.colors[0],config.secondColors[0],plrSurfFeat,level["vels"][0])
         self.inactiveMassList.append(plr)
         self.totalMasses=len(self.inactiveMassList)
